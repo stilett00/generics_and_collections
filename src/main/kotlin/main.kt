@@ -14,5 +14,31 @@ fun main(){
     WallService.update(Post(22, 1900090000, "My edited post", id = 1))
     WallService.printPosts()
 
+    val noteService = NoteService()
 
+    noteService.add(Note(1, noteText = "note 01"))
+    noteService.add(Note(2, noteText = "note 02"))
+
+    noteService.read()
+
+    val foundNote = noteService.getById(2)
+    println("Found note: $foundNote")
+
+    val missingNote = noteService.getById(999)
+    println("Missing note: $missingNote")
+
+    noteService.delete(2)
+
+    noteService.delete(999)
+
+    noteService.restore(2)
+
+    noteService.restore(1)
+
+    noteService.getById(1)
+    noteService.getById(999)
+
+    noteService.edit(Note(noteId = 2, noteText = "Updated Note 02"))
+
+    noteService.read()
 }
