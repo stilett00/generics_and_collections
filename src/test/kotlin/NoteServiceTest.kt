@@ -9,12 +9,15 @@ class NoteServiceTest {
     @Before
     fun setUp() {
         noteService = NoteService()
+        noteService.clear()
+        noteService.add(Note(noteId = 1, noteText = "First Note"))
+        noteService.add(Note(noteId = 2, noteText = "Second Note", isDeleted = true))
     }
 
     @Test
     fun addShouldAddNewNoteAndAssignId() {
         val note = noteService.add(Note(noteText = "Test Note"))
-        assertEquals(1, note.noteId)
+        assertEquals(3, note.noteId)
         assertEquals("Test Note", note.noteText)
     }
 
@@ -48,7 +51,7 @@ class NoteServiceTest {
         noteService.add(Note(noteText = "Note 3"))
 
         val notes = noteService.read()
-        assertEquals(2, notes.size)
+        assertEquals(3, notes.size)
         assertFalse(notes.any { it.isDeleted })
     }
 
@@ -75,5 +78,53 @@ class NoteServiceTest {
 
         val restoredNote = noteService.getById(note.noteId)
         assertFalse(restoredNote.isDeleted)
+    }
+
+    @Test
+    fun addComment_toExistingNote_shouldAddComment() {
+        noteService.addComment(1, "First comment for note 1")
+        val comments = noteService.readComments(1)
+
+        assertEquals(1, comments.size)
+        assertEquals("First comment for note 1", comments[0].commentText)
+    }
+
+    @Test
+    fun addComment_toDeletedNote_shouldNotAddComment() {
+        noteService.addComment(2, "This comment should not be added")
+        val comments = noteService.readComments(2)
+
+        assertTrue(comments.isEmpty())
+    }
+
+    @Test
+    fun addComment_toNonExistentNote_shouldNotAddComment() {
+        noteService.addComment(3, "This comment should not be added")
+        val comments = noteService.readComments(3)
+
+        assertTrue(comments.isEmpty())
+    }
+
+    @Test
+    fun readComments_forExistingNote_shouldReturnComments() {
+        noteService.addComment(1, "Comment 1")
+        noteService.addComment(1, "Comment 2")
+        val comments = noteService.readComments(1)
+
+        assertEquals(2, comments.size)
+        assertEquals("Comment 1", comments[0].commentText)
+        assertEquals("Comment 2", comments[1].commentText)
+    }
+
+    @Test
+    fun readComments_forDeletedNote_shouldReturnEmptyList() {
+        val comments = noteService.readComments(2)
+        assertTrue(comments.isEmpty())
+    }
+
+    @Test
+    fun readComments_forNonExistentNote_shouldReturnEmptyList() {
+        val comments = noteService.readComments(3)
+        assertTrue(comments.isEmpty())
     }
 }

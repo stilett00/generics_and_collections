@@ -41,4 +41,14 @@ fun main(){
     noteService.edit(Note(noteId = 2, noteText = "Updated Note 02"))
 
     noteService.read()
+
+    noteService.addComment(1, "First comment for note 1")
+    noteService.addComment(1, "Second comment for note 1")
+    noteService.addComment(2, "First comment for note 2")
+
+    noteService.readComments(1)
+    noteService.readComments(2)
+
+    noteService.read()
+
 }
